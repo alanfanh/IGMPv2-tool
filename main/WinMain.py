@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-import sys,os,time,wmi
+import sys, wmi
 from scapy.contrib.igmp import *
 from scapy.all import *
 from Global import *
-from PyQt4 import QtGui,QtCore
-from PyQt4.QtCore import SIGNAL
-from PyQt4.QtGui import QApplication,QWidget
+from PySide6 import QtCore,QtWidgets
+from PySide6.QtCore import SIGNAL
 from gui import Ui_IgmpSerV2
-class MainWindow(QtGui.QMainWindow):
+
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow,self).__init__()
         self.ui=Ui_IgmpSerV2()
@@ -92,7 +92,7 @@ class MainWindow(QtGui.QMainWindow):
             cfg.write(f)
         self.config=read_config()
         if flag:
-                QtGui.QMessageBox.information(self,"提示",u"保存配置成功",QtGui.QMessageBox.Yes)
+                QtWidgets.QMessageBox.information(self,"提示",u"保存配置成功",QtWidgets.QMessageBox.Yes)
     def init_iface(self):
         #初始化网卡接口，显示至下拉列表中
         print("*****init iface*****")
@@ -148,20 +148,21 @@ class MainWindow(QtGui.QMainWindow):
         mac_addr=mac_s+mac_end
         return mac_addr
     def about(self):
-        QtGui.QMessageBox.about(self,u"帮助信息",u"Auther:FanHao\n1、本工具仅支持IGMPv2，可以模拟IGMP Server发送IGMP协议报文和组播数据报文。\n2、本工具不支持解包功能。\n3、组播IP选项置空时，点击第一个发送按钮，将发送IGMP通用组查询报文。\n4、组播IP不置空时，点击第一个发送按钮，将发送特定组查询报文。\n5、点击发送按钮，线程将一直发包。直到点击停止按钮，此时发包停止。\n6、如果数据报文目的IP填写为空，程序将控制线程往地址0.0.0.0发送UDP数据报文。\n7、如果发包间隔设置为空，则后台将以默认间隔2s发送报文。")
+        QtWidgets.QMessageBox.about(self,u"帮助信息",u"Auther:FanHao\n1、本工具仅支持IGMPv2，可以模拟IGMP Server发送IGMP协议报文和组播数据报文。\n2、本工具不支持解包功能。\n3、组播IP选项置空时，点击第一个发送按钮，将发送IGMP通用组查询报文。\n4、组播IP不置空时，点击第一个发送按钮，将发送特定组查询报文。\n5、点击发送按钮，线程将一直发包。直到点击停止按钮，此时发包停止。\n6、如果数据报文目的IP填写为空，程序将控制线程往地址0.0.0.0发送UDP数据报文。\n7、如果发包间隔设置为空，则后台将以默认间隔2s发送报文。")
 
     def showstate(self,msg):
         #状态栏显示状态信息
         self.ui.statusbar.showMessage(msg)
+
     def close_event(self,event):
-        QtGui.QMessageBox.question(self,'Message','Are you sure to quit?',QtGui.QMessageBox.Yes,QtGui.QMessageBox.No)
-        if reply == QtGui.QMessageBox.Yes:
+        reply = QtWidgets.QMessageBox.question(self,'Message','Are you sure to quit?',QtWidgets.QMessageBox.Yes,QtWidgets.QMessageBox.No)
+        if reply == QtWidgets.QMessageBox.Yes:
             event.accept()
         else:
             event.ignore()
 
 class RunThread(QtCore.QThread):
-    send_singal=QtCore.pyqtSignal(str)
+    send_singal=QtCore.Signal(str)
     def __init__(self,parent):
         super(RunThread,self).__init__(parent)
         self.parent=parent
@@ -195,8 +196,9 @@ class RunThread(QtCore.QThread):
             b=IP(src=self.srcip,dst=self.dstip)
         pkt=a/b/c/Padding(str)
         sendp(pkt,iface=self.iface,inter=self.interval,loop=1)
+
 class RunSendData(QtCore.QThread):
-    data_singal=QtCore.pyqtSignal(str)
+    data_singal=QtCore.Signal(str)
     def __init__(self,parent):
         super(RunSendData,self).__init__(parent)
         self.parent=parent
@@ -240,7 +242,7 @@ class RunSendData(QtCore.QThread):
 
 
 if __name__ == "__main__":
-    app=QtGui.QApplication(sys.argv)
+    app=QtWidgets.QApplication(sys.argv)
     wm=MainWindow()
     wm.show()
-    app.exec_()
+    sys.exit(app.exec())
