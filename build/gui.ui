@@ -40,7 +40,7 @@
      <string>保存配置</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBox">
+   <widget class="QComboBox" name="iface">
     <property name="geometry">
      <rect>
       <x>80</x>
@@ -193,18 +193,6 @@
       <string>Resp</string>
      </property>
     </widget>
-    <zorder>save_conf</zorder>
-    <zorder>label_inter</zorder>
-    <zorder>resp</zorder>
-    <zorder>multicast</zorder>
-    <zorder>label_multicast</zorder>
-    <zorder>send_pro</zorder>
-    <zorder>dst_ip</zorder>
-    <zorder>label_srcip</zorder>
-    <zorder>label_dstip</zorder>
-    <zorder>src_ip</zorder>
-    <zorder>interval</zorder>
-    <zorder>label_resp</zorder>
    </widget>
    <widget class="QGroupBox" name="groupBox2">
     <property name="geometry">
@@ -355,7 +343,7 @@
      <x>0</x>
      <y>0</y>
      <width>412</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
