@@ -12,7 +12,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow,self).__init__()
         self.ui=Ui_IgmpSerV2()
         self.ui.setupUi(self)
-        self.setWindowTitle(u"IgmpSerV2发包工具")
+        self.setWindowTitle(u"模拟IGMPv2-Ser发包工具")
         self.init_iface()
         self.init_config()
         self.select_iface()
