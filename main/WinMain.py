@@ -154,7 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #状态栏显示状态信息
         self.ui.statusbar.showMessage(msg)
 
-    def close_event(self,event):
+    def closeEvent(self,event):
         reply = QtWidgets.QMessageBox.question(self,'Message','Are you sure to quit?',QtWidgets.QMessageBox.Yes,QtWidgets.QMessageBox.No)
         if reply == QtWidgets.QMessageBox.Yes:
             event.accept()
