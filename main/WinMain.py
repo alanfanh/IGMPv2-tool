@@ -37,6 +37,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.runthread.stop_test()
             self.showstate(msg=u'已停止发送IGMP')
             self.ui.send_pro.setText(u"发送")
+
     def send_udp(self):
         text=self.ui.send_udp.text()
         print(text)
@@ -50,6 +51,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.send_data.stop_test()
             self.showstate(msg=u'已停止发送UDP数据报文')
             self.ui.send_udp.setText(u"发送")
+
     def init_config(self):
         #初始化GUI时，加载默认配置
         self.config=read_config()
@@ -63,6 +65,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.multicast.setText(self.config['igmp']['multicast'])
         self.ui.interval.setText(self.config['igmp']['interval'])
         self.ui.rate.setText(self.config['igmp']['rate'])
+
     def save_config(self,flag=True):
         #保存配置，将GUI界面上的参数保存至config.ini文件中
         guid_cfg={}
@@ -81,8 +84,8 @@ class MainWindow(QtWidgets.QMainWindow):
         init_dict=read_config()
         cfg=configparser.ConfigParser()
         for key,value in init_dict.items():
-             cfg.add_section(key)
-             for k,v in value.items():
+            cfg.add_section(key)
+            for k,v in value.items():
                 if key in guid_cfg:
                     if k in guid_cfg[key]:
                         cfg.set(key,k,guid_cfg[key][k])
@@ -92,7 +95,8 @@ class MainWindow(QtWidgets.QMainWindow):
             cfg.write(f)
         self.config=read_config()
         if flag:
-                QtWidgets.QMessageBox.information(self,"提示",u"保存配置成功",QtWidgets.QMessageBox.Yes)
+            QtWidgets.QMessageBox.information(self,"提示",u"保存配置成功",QtWidgets.QMessageBox.Yes)
+
     def init_iface(self):
         #初始化网卡接口，显示至下拉列表中
         print("*****init iface*****")
@@ -106,6 +110,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cur_iface=self.ui.iface.currentText()
         self.iface=cur_iface
         print(cur_iface)
+
     def get_iface(self):
         #获取网卡列表，返回list
         iface_list=[]
@@ -116,6 +121,7 @@ class MainWindow(QtWidgets.QMainWindow):
             iface_list.append(iface_desc)
         print(iface_list)
         return iface_list
+
     def get_ifaceMapMac(self,desc):
         #获取网卡接口描述与mac地址映射字典
         desc_mac={}
@@ -128,6 +134,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # iface_list.append(iface_desc)
         print(desc_mac[desc])
         return desc_mac[desc]
+
     def get_multicast_mac(self,ip):
         mac_s='01:00:5e:'
         ip_list=ip.split('.')[1:]
@@ -147,6 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
         mac_end=':'.join(num_list)
         mac_addr=mac_s+mac_end
         return mac_addr
+
     def about(self):
         QtWidgets.QMessageBox.about(self,u"帮助信息",u"Auther:FanHao\n1、本工具仅支持IGMPv2，可以模拟IGMP Server发送IGMP协议报文和组播数据报文。\n2、本工具不支持解包功能。\n3、组播IP选项置空时，点击第一个发送按钮，将发送IGMP通用组查询报文。\n4、组播IP不置空时，点击第一个发送按钮，将发送特定组查询报文。\n5、点击发送按钮，线程将一直发包。直到点击停止按钮，此时发包停止。\n6、如果数据报文目的IP填写为空，程序将控制线程往地址0.0.0.0发送UDP数据报文。\n7、如果发包间隔设置为空，则后台将以默认间隔2s发送报文。")
 
@@ -166,6 +174,7 @@ class RunThread(QtCore.QThread):
     def __init__(self,parent):
         super(RunThread,self).__init__(parent)
         self.parent=parent
+
     def init_data(self):
         self.iface=self.parent.iface
         self.src_mac=self.parent.get_ifaceMapMac(self.iface)
@@ -175,12 +184,15 @@ class RunThread(QtCore.QThread):
         self.resp=self.parent.config['igmp']['resp']
         self.interval=int(self.parent.config['igmp']['interval'])
         print(self.interval,type(self.interval))
+
     def start_test(self):
         self.init_data()
         self.start()
+
     def stop_test(self):
         self.terminate()
         self.wait()
+
     def run(self):
         str='000000000000000000'
         c=IGMP(type=0x11,gaddr=self.mulicast)
@@ -202,6 +214,7 @@ class RunSendData(QtCore.QThread):
     def __init__(self,parent):
         super(RunSendData,self).__init__(parent)
         self.parent=parent
+
     def init_data(self):
         self.iface=self.parent.iface
         self.s_mac=self.parent.get_ifaceMapMac(self.iface)
@@ -211,12 +224,15 @@ class RunSendData(QtCore.QThread):
         print(type(self.sport))
         self.dport=int(self.parent.config['igmp']['dport'])
         self.rate=int(self.parent.config['igmp']['rate'])
+
     def start_test(self):
         self.init_data()
         self.start()
+
     def stop_test(self):
         self.terminate()
         self.wait()
+
     def run(self):
         str="AAAAAAAAAAAAAA0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         c=UDP(sport=self.sport,dport=self.dport)
