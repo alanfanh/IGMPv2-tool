@@ -25,6 +25,8 @@ class Ui_IgmpSerV2(object):
         if not IgmpSerV2.objectName():
             IgmpSerV2.setObjectName(u"IgmpSerV2")
         IgmpSerV2.resize(412, 431)
+        IgmpSerV2.setMinimumSize(QSize(412, 431))
+        IgmpSerV2.setMaximumSize(QSize(412, 431))
         self.action = QAction(IgmpSerV2)
         self.action.setObjectName(u"action")
         self.centralwidget = QWidget(IgmpSerV2)
