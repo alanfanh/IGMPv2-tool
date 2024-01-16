@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys, wmi
 from scapy.contrib.igmp import *
-from scapy.all import *
+from scapy.all import UDP,Raw,sendp,Padding
 from Global import *
 from PySide6 import QtCore,QtWidgets
 from PySide6.QtCore import SIGNAL
