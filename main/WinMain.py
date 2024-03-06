@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-import sys, wmi
+import sys
+import wmi
 from scapy.contrib.igmp import *
-from scapy.all import UDP,Raw,sendp,Padding
-from Global import *
-from PySide6 import QtCore,QtWidgets
-from PySide6.QtCore import SIGNAL
+from scapy.all import UDP, Raw, sendp, Padding
+from PySide6.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PySide6.QtCore import QThread, SIGNAL, Signal
 from gui import Ui_IgmpSerV2
+from Global import *
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow,self).__init__()
         self.ui=Ui_IgmpSerV2()
@@ -19,7 +20,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.connect(self.ui.save_conf,SIGNAL("clicked()"),self.save_config)
         self.connect(self.ui.send_pro,SIGNAL("clicked()"),self.send_igmp)
         self.connect(self.ui.send_udp,SIGNAL("clicked()"),self.send_udp)
-        self.connect(self.ui.action,QtCore.SIGNAL('triggered()'),self.about)
+        self.connect(self.ui.action,SIGNAL('triggered()'),self.about)
         self.runthread=RunThread(self)
         self.send_data=RunSendData(self)
         # self.runthread.send_singal.connect(self.show_state)
@@ -95,7 +96,7 @@ class MainWindow(QtWidgets.QMainWindow):
             cfg.write(f)
         self.config=read_config()
         if flag:
-            QtWidgets.QMessageBox.information(self,"提示",u"保存配置成功",QtWidgets.QMessageBox.Yes)
+            QMessageBox.information(self,"提示",u"保存配置成功",QMessageBox.Yes)
 
     def init_iface(self):
         #初始化网卡接口，显示至下拉列表中
@@ -156,21 +157,21 @@ class MainWindow(QtWidgets.QMainWindow):
         return mac_addr
 
     def about(self):
-        QtWidgets.QMessageBox.about(self,u"帮助信息",u"Auther:FanHao\n1、本工具仅支持IGMPv2，可以模拟IGMP Server发送IGMP协议报文和组播数据报文。\n2、本工具不支持解包功能。\n3、组播IP选项置空时，点击第一个发送按钮，将发送IGMP通用组查询报文。\n4、组播IP不置空时，点击第一个发送按钮，将发送特定组查询报文。\n5、点击发送按钮，线程将一直发包。直到点击停止按钮，此时发包停止。\n6、如果数据报文目的IP填写为空，程序将控制线程往地址0.0.0.0发送UDP数据报文。\n7、如果发包间隔设置为空，则后台将以默认间隔2s发送报文。")
+        QMessageBox.about(self,u"帮助信息",u"Auther:FanHao\n1、本工具仅支持IGMPv2，可以模拟IGMP Server发送IGMP协议报文和组播数据报文。\n2、本工具不支持解包功能。\n3、组播IP选项置空时，点击第一个发送按钮，将发送IGMP通用组查询报文。\n4、组播IP不置空时，点击第一个发送按钮，将发送特定组查询报文。\n5、点击发送按钮，线程将一直发包。直到点击停止按钮，此时发包停止。\n6、如果数据报文目的IP填写为空，程序将控制线程往地址0.0.0.0发送UDP数据报文。\n7、如果发包间隔设置为空，则后台将以默认间隔2s发送报文。")
 
     def showstate(self,msg):
         #状态栏显示状态信息
         self.ui.statusbar.showMessage(msg)
 
     def closeEvent(self,event):
-        reply = QtWidgets.QMessageBox.question(self,'Message','Are you sure to quit?',QtWidgets.QMessageBox.Yes,QtWidgets.QMessageBox.No)
-        if reply == QtWidgets.QMessageBox.Yes:
+        reply = QMessageBox.question(self,'Message','Are you sure to quit?', QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
             event.accept()
         else:
             event.ignore()
 
-class RunThread(QtCore.QThread):
-    send_singal=QtCore.Signal(str)
+class RunThread(QThread):
+    send_singal=Signal(str)
     def __init__(self,parent):
         super(RunThread,self).__init__(parent)
         self.parent=parent
@@ -209,8 +210,8 @@ class RunThread(QtCore.QThread):
         pkt=a/b/c/Padding(str)
         sendp(pkt,iface=self.iface,inter=self.interval,loop=1)
 
-class RunSendData(QtCore.QThread):
-    data_singal=QtCore.Signal(str)
+class RunSendData(QThread):
+    data_singal=Signal(str)
     def __init__(self,parent):
         super(RunSendData,self).__init__(parent)
         self.parent=parent
@@ -258,7 +259,7 @@ class RunSendData(QtCore.QThread):
 
 
 if __name__ == "__main__":
-    app=QtWidgets.QApplication(sys.argv)
+    app=QApplication(sys.argv)
     wm=MainWindow()
     wm.show()
     sys.exit(app.exec())
